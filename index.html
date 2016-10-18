@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>SUPER BRICKBREAK</title>
+    <style>
+        * {
+            background: #222;
+            padding: 0;
+            margin: auto;
+        }
+        
+        canvas {
+            background: #000;
+            display: block;
+            font-family: GohuFont;
+            margin: auto auto;
+        }
+        
+        #load {
+            font-family: GohuFont;
+            visibility: hidden;
+            height: 0px;
+        }
+        
+        #container {
+            vertical-align: middle;
+            width: auto;
+            height: auto;
+        }
+        
+        @font-face {
+            font-family: GohuFont;
+            src: url('./gohufont-11.ttf') format('truetype');
+        }
+    </style>
+</head>
+
+<body>
+    <div id="load">wut</div>
+    <div id="container" width="auto" height="auto">
+        <canvas id="gameCanvas" width="1280" height="720"></canvas>
+        <script src="SuperBrickbreak.js"></script>
+    </div>
+</body>
+
+</html>
