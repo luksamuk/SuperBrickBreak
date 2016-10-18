@@ -3,6 +3,7 @@ var canvas = document.getElementById("gameCanvas");
 var ctx = canvas.getContext("2d");
 var FRAMETIME = 1000 / 60;
 ctx.imageSmoothingEnabled = false;
+fitViewport(canvas);
 
 
 // Input
@@ -62,6 +63,10 @@ Math.radtodeg = function(angle) {
 
 function setFontSize(fontSize) {
     ctx.font = (fontSize * canvas.width / 720) + "px GohuFont";
+}
+function fitViewport(canvas) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 }
 
 
@@ -785,7 +790,6 @@ document.addEventListener("mouseup",
     function(e) {
         if (e.which == 1) asyncPressingLMB = false;
     }, false);
-
 
 
 // More system stuff

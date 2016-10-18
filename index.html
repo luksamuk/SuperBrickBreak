@@ -8,14 +8,16 @@
         * {
             background: #222;
             padding: 0;
-            margin: auto;
+            margin: 0;
         }
+
         
         canvas {
+            width: 100%;
+            height: 100%;
             background: #000;
             display: block;
             font-family: GohuFont;
-            margin: auto auto;
         }
         
         #load {
@@ -25,9 +27,12 @@
         }
         
         #container {
-            vertical-align: middle;
-            width: auto;
-            height: auto;
+            position:fixed !important;
+            position:absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
         
         @font-face {
@@ -39,10 +44,10 @@
 
 <body>
     <div id="load">wut</div>
-    <div id="container" width="auto" height="auto">
-        <canvas id="gameCanvas" width="1280" height="720"></canvas>
+    
+        <canvas id="gameCanvas"></canvas>
         <script src="SuperBrickbreak.js"></script>
-    </div>
+    
 </body>
 
 </html>
