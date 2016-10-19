@@ -5,6 +5,7 @@ var FRAMETIME = 1000 / 60;
 ctx.imageSmoothingEnabled = false;
 fitViewport(canvas);
 
+var version = "v1.0.1";
 
 // Input
 // Async pressing keys and mouse stuff
@@ -613,6 +614,7 @@ function displayHUD() {
         ctx.textAlign = "end"
         setFontSize(12);
         ctx.fillText("©2016 IronPlay", width, ballDiameter);
+        ctx.fillText(version, width, ballDiameter + (25 / 720 * height));
 
         // High Score
         ctx.textAlign = "center";
