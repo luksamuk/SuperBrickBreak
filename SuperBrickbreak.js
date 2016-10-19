@@ -14,8 +14,11 @@ var asyncPressingRight = false,
     asyncPressingA = false,
     asyncPressingEnter = false,
     asyncPressingLMB = false,
-    asyncPressingQ = false;;
-mousePos = new vec2(0.0, 0.0);
+    asyncPressingQ = false,
+    mousePos = new vec2(0.0, 0.0),
+    leftStickDeadZone = 0.3;
+    leftStick = 0.0,
+    rightTrigger = 0.0;
 
 // Sync pressing keys
 var pressingRight = false,
@@ -24,19 +27,25 @@ var pressingRight = false,
     pressingA = false,
     pressingEnter = false,
     pressingLMB = false,
-    pressingQ = false;
+    pressingQ = false,
+    pressingGamepadA = false,
+    pressingGamepadStart = false;
 
 // Old sync pressing keys (for pressed state)
 var oldPressingS = false,
     oldPressingEnter = false,
     oldPressingLMB = false,
-    oldPressingQ = false;
+    oldPressingQ = false
+    oldPressingGamepadA = false,
+    oldPressingGamepadStart = false;
 
 // Sync pressed keys
 var pressedS = false,
     pressedEnter = false,
     pressedLMB = false,
-    pressedQ = false;
+    pressedQ = false,
+    pressedGamepadA = false,
+    pressedGamepadStart = false;
 
 // Fields
 var LEVEL = 0,
@@ -434,14 +443,17 @@ Pad.prototype.update =
         var frameRate = 60.0; // deal. with. it.
 
         if (this.tracking) {
-            // Generic stick gambiarra for now
-            var lstick = 0.0;
-            lstick += pressingRight ? 1.0 : 0.0;
-            lstick -= pressingLeft ? 1.0 : 0.0;
-            // Acceleration gambiarra as well cuz no Xbox controller trigger for now
+            // Keyboard stuff
+            var displaceX = 0.0;
+            displaceX += pressingRight ? 1.0 : 0.0;
+            displaceX -= pressingLeft ? 1.0 : 0.0;
             this.maxspeed = this.truemaxspeed + (this.truemaxspeed * (pressingA ? 1.0 : 0.0));
 
-            this.position.x += this.maxspeed * lstick * 60.0 / frameRate;
+            // Controller override
+            displaceX = (leftStick == 0.0) ? displaceX : leftStick;
+            this.maxspeed = (rightTrigger == 0.0) ? this.maxspeed : (this.truemaxspeed + (this.truemaxspeed * rightTrigger));
+
+            this.position.x += this.maxspeed * displaceX * 60.0 / frameRate;
         }
         this.position.x = Math.clamp(this.position.x, this.size.x / 2, width - (this.size.x / 2));
 
@@ -619,14 +631,22 @@ function displayHUD() {
         ctx.textAlign = "center";
         var lineHeight = height * 0.038888889;
 
-        var tutorialLines = [
+        /*var tutorialLines = [
             "       LEFT/RIGHT, MOUSE = MOVE PADDLE             ",
             "     S, LEFT MOUSE CLICK = RELEASE BALL            ",
             "                  HOLD A = FASTER PADDLE           ",
             "                   ENTER = PAUSE                   "
+        ];*/
+        var tutorialLines = [
+            "  KEYBOARD  &   MOUSE    |  X360 PAD  |    ACTION     ",
+            "------------------------------------------------------",
+            " LEFT/RIGHT    MOVEMENT  | LEFT STICK | MOVE PADDLE   ",
+            "      S       LEFT CLICK |     A      | RELEASE BALL  ",
+            "   HOLD A         -      |     RT     | FASTER PADDLE ",
+            "    ENTER         -      |    START   | PAUSE         "
         ];
 
-        var startY = (3 * height / 4) - (lineHeight * (tutorialLines.length - 1));
+        var startY = (13 * height / 16) - (lineHeight * (tutorialLines.length - 1));
 
         for (i = 0; i < tutorialLines.length; i++) {
             ctx.fillText(tutorialLines[i],
@@ -663,6 +683,33 @@ function updateInput() {
     pressedEnter = !oldPressingEnter && pressingEnter;
     pressedLMB = !oldPressingLMB && pressingLMB;
     pressedQ = !oldPressingQ && pressingQ;
+
+    // Gamepad stuff
+    var gamepads = navigator.getGamepads();
+    if(gamepads[0] != null) {
+        var gamePad = gamepads[0];
+        leftStick = Math.abs(gamePad.axes[0]) < leftStickDeadZone ? 0.0 : gamePad.axes[0];
+        rightTrigger = gamePad.buttons[7].value;
+
+        // Old states, new states
+        oldPressingGamepadA = pressingGamepadA;
+        oldPressingGamepadStart = pressingGamepadStart;
+        pressingGamepadA = gamePad.buttons[0].pressed;
+        pressingGamepadStart = gamePad.buttons[9].pressed;
+        // Button single presses
+        pressedGamepadA = !oldPressingGamepadA && pressingGamepadA;
+        pressedGamepadStart = !oldPressingGamepadStart && pressingGamepadStart;
+    }
+    else {
+        leftStick = 0.0;
+        rightTrigger = 0.0;
+        oldPressingGamepadA = false;
+        pressingGamepadA = false;
+        oldPressingGamepadStart = false;
+        pressingGamepadStart = false;
+        pressedGamepadA = false;
+        pressedGamepadStart = false;
+    }
 }
 
 // Initialization stuff
@@ -689,14 +736,14 @@ function update() {
         });
 
         // Wake ball up, hide tutorial if necessary
-        if (pressedS || pressedLMB) {
+        if (pressedS || pressedLMB || pressedGamepadA) {
             ball.wakeUp();
             SHOWTUTORIAL = false;
         }
     }
 
     // Pause/unpause when required
-    if (pressedEnter && !SHOWTUTORIAL)
+    if ((pressedEnter || pressedGamepadStart) && !SHOWTUTORIAL)
         PAUSED = !PAUSED;
 
     // Programatically hide or show cursor.
@@ -789,6 +836,11 @@ document.addEventListener("mousedown",
 document.addEventListener("mouseup",
     function(e) {
         if (e.which == 1) asyncPressingLMB = false;
+    }, false);
+
+document.addEventListener("resize",
+    function() {
+        fitViewport(canvas);
     }, false);
 
 
