@@ -30,7 +30,26 @@ Stuff that I plan to add/enhance/fix.
 - Add smartphone support;
 - Correct bug that gives the player 500 points as highscore, right on the beginning;
 - Add fullscreen support (persistent button);
-- Facebook & Twitter score share button.
+- Facebook & Twitter score share button;
+- ~~Add a frame border to the game;~~ (v1.0.2b)
+- Improve graphics
+    - Make paddle and ball have a visual style that matches the blocks;
+    - Particle effects;
+- Improve paddle/ball and overall graphics so the game feels in the same visual style;
+- Add CONTENT!
+    - Power-ups
+        - Multiball;
+        - Crazy blocks level;
+        - Rotating blocks level;
+        - Magnetic paddle;
+    - Different/interesting block gimmicks
+        - Turn levels 11-20 into an actual powerup that makes blocks "crazy" for a few secs then leaves them unarranged;
+    - MORE LEVELS
+        - External, simple level editor;
+        - External level storage;
+    - Music
+        - Various sound effects;
+        - Level music (at least three or something like that, so the player doesn't get bored).
 
 Idea List
 ---------

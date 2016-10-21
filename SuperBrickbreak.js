@@ -20,7 +20,7 @@ var lastCall,
 var last1up = 0.0,
     livesAwardValue = 5000;
 
-var version = "v1.0.1";
+var version = "v1.0.2b";
 
 // Input
 // Async pressing keys and mouse stuff
@@ -621,8 +621,8 @@ function displayHUD() {
         // Credits
         ctx.textAlign = "end"
         setFontSize(12);
-        ctx.fillText("©2016 IronPlay", width, ballDiameter);
-        ctx.fillText(version, width, ballDiameter + (25 / 720 * height));
+        ctx.fillText("©2016 IronPlay", width - 4, ballDiameter);
+        ctx.fillText(version, width - 4, ballDiameter + (25 / 720 * height));
 
         // High Score
         ctx.textAlign = "center";
@@ -631,11 +631,11 @@ function displayHUD() {
 
         // Title
         setFontSize(32);
-        ctx.fillText("SUPER BRICKBREAK", width / 2, height / 2);
+        ctx.fillText("SUPER BRICKBREAK", width / 2, 3 * height / 8);
         setFontSize(12);
         ctx.textAlign = "end";
         ctx.fillText("Online Edition", (11 * width / 16),
-            (height / 2) + (25 / 720 * height));
+            (3 * height / 8) + (25 / 720 * height));
 
         setFontSize(16);
         ctx.textAlign = "center";
@@ -674,7 +674,12 @@ function displayHUD() {
     // FPS
     setFontSize(9);
     ctx.textAlign = "left";
-    ctx.fillText("FPS: " + Math.floor(frameRate) + " (" + Math.floor(minFPS) + "/" + Math.floor(maxFPS) + ")", ballRadius, ballRadius);
+    ctx.fillText(Math.floor(frameRate), ballRadius, ballRadius + 4);
+    /*ctx.textAlign = "center";
+    ctx.fillText(Math.floor(frameRate), ballRadius + (20 / 1280 * width), ballRadius + 4);
+    setFontSize(6);
+    ctx.fillText("(" + Math.floor(minFPS) + "/" + Math.floor(maxFPS) + ")",
+                ballRadius + (20 / 1280 * width), ballRadius + 4 + (12 / 720 * height));*/
 }
 
 function updateInput() {
@@ -812,6 +817,18 @@ function update() {
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // A nice frame border.
+    ctx.strokeStyle = "white";
+    ctx.beginPath();
+    ctx.rect(0, 0, canvas.width, canvas.height);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.rect(2, 2, canvas.width - 4, canvas.height - 4);
+    ctx.stroke();
+    ctx.closePath(); 
+
     pad.draw();
     ball.draw();
     blockList.forEach(function(block) {
