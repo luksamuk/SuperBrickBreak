@@ -3,7 +3,7 @@ SUPER BRICKBREAK - Online Edition
 by Lucas Vieira (luksamuk)<br/>
 Copyright (c) 2016 IronPlay Games.
 
-Fast-paced blockbreaker clone featuring 20+ levels - online version.
+Fast-paced breakout clone featuring 20+ levels - online version.
 
 ![Game Screenshot](extra/screenshot.png)
 

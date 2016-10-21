@@ -808,6 +808,10 @@ function update() {
 
     // Check if game needs to be reset
     checkResetGame();
+
+    if(pressedQ) {
+        blockList = [];
+    }
 }
 
 function draw() {
