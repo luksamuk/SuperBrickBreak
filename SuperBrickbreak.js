@@ -1,3 +1,12 @@
+/* Copyright (C) 2016 Lucas Vieira - All Rights Reserved
+ * You may use, distribute and modify this code under the
+ * terms of the MIT License.
+ *
+ * You should have received a copy of the MIT License with
+ * this file. If not, please write to: lucas.samuel2002@gmail.com,
+ * or visit https://luksamuk.github.io/.
+ */
+
 // System
 var canvas = document.getElementById("gameCanvas");
 var ctx = canvas.getContext("2d");
