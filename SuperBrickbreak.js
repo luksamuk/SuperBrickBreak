@@ -4,6 +4,12 @@ var ctx = canvas.getContext("2d");
 var FRAMETIME = 1000 / 60;
 ctx.imageSmoothingEnabled = false;
 fitViewport(canvas);
+var lastCall,
+    frameRate,
+    minFPS = 60.0,
+    maxFPS = 0.0;
+var last1up = 0.0,
+    livesAwardValue = 5000;
 
 var version = "v1.0.1";
 
@@ -75,8 +81,8 @@ function setFontSize(fontSize) {
     ctx.font = (fontSize * canvas.width / 720) + "px GohuFont";
 }
 function fitViewport(canvas) {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth > 1280 ? 1280 : window.innerWidth;
+    canvas.height = window.innerHeight > 720 ? 720 : window.innerHeight;
 }
 
 
@@ -221,6 +227,7 @@ Ball.prototype.bottomedge = 0.0;
 Ball.prototype.leftedge = 0.0;
 Ball.prototype.rightedge = 0.0;
 Ball.prototype.theta = 0.0;
+Ball.prototype.queryCollisionPoint = vec2(0.0, 0.0);
 Ball.prototype.TrackPad =
     function(pad) {
         this.trackedPad = pad;
@@ -242,7 +249,6 @@ Ball.prototype.update =
     function() {
         var width = canvas.width;
         var height = canvas.height;
-        var frameRate = 60.0; // Deal with it.
 
         // Positioning when stopped
         if (this.stopped) {
@@ -315,39 +321,28 @@ Ball.prototype.update =
         if (this.trackedBlocks != null) {
             this.trackedBlocks.forEach(function(block) {
                 if (that.intersectsBlock(block)) {
-                    var touched = false;
-                    // Left collision
-                    if ((that.rightedge >= block.leftedge &&
-                            that.rightedge < block.position.x &&
-                            that.speed.x > 0.0)
-                        // Right collision
-                        ||
-                        (that.leftedge <= block.rightedge &&
-                            that.leftedge > block.position.x &&
-                            that.speed.x < 0.0)) {
-                        that.speed.x *= -1.0;
-                        touched = true;
-                    }
+                    var collisionAngle = Math.atan2(that.queryCollisionPoint.y, that.queryCollisionPoint.x);
+                    collisionAngle = Math.radtodeg(collisionAngle);
+                    collisionAngle = collisionAngle < 0 ? 360 + collisionAngle : collisionAngle;
+                    while(collisionAngle >= 360) collisionAngle -= 360.0;
 
-                    // Top collision
-                    if ((that.bottomedge >= block.topedge &&
-                            that.bottomedge < block.position.y &&
-                            that.speed.y > 0.0)
-                        // Bottom collision
-                        ||
-                        (that.topedge <= block.bottomedge &&
-                            that.topedge > block.position.y &&
-                            that.speed.y < 0.0)) {
+                    // Quadrants
+                    // Bottom and top
+                    if((collisionAngle >= 45.0 && collisionAngle <= 135.0 && that.speed.y < 0.0)
+                    || (collisionAngle >= 225.0 && collisionAngle <= 315.0 && that.speed.y > 0.0)) 
                         that.speed.y *= -1.0;
-                        touched = true;
-                    }
 
-                    if (touched) {
-                        var gain = RUMBLE ? 20 : 10;
-                        SCORE += gain + (MULTIPLIER >= 2 ? gain * MULTIPLIER : 0);
-                        if (MULTIPLIER < 4) MULTIPLIER++;
-                        that.removalBlocks.push(block);
-                    }
+                    // Bottom half-left, right, and upper half-left
+                    if((collisionAngle >= 0.0 && collisionAngle <= 45.0 && that.speed.x < 0.0)
+                    || (collisionAngle >= 135.0 && collisionAngle <= 225.0 && that.speed.x > 0.0)
+                    || (collisionAngle >= 315.0 && collisionAngle < 360.0 && that.speed.x < 0.0)) 
+                        that.speed.x *= -1.0;
+
+
+                    var gain = RUMBLE ? 20 : 10;
+                    SCORE += gain + (MULTIPLIER >= 2 ? gain * MULTIPLIER : 0);
+                    if (MULTIPLIER < 4) MULTIPLIER++;
+                    that.removalBlocks.push(block);
                 }
             });
         }
@@ -399,8 +394,12 @@ Ball.prototype.intersectsBlock =
         // Shall we use square distance instead of distance?
         // JavaScript is already expensive enough.
         if ((Math.pow(this.position.x - compare_point.x, 2) +
-                Math.pow(this.position.y - compare_point.y, 2)) <= Math.pow(this.diameter / 2.0, 2))
+                Math.pow(this.position.y - compare_point.y, 2)) <= Math.pow(this.diameter / 2.0, 2)) {
+            // Save collision point
+            this.queryCollisionPoint = new vec2(this.position.x - compare_point.x,
+                                        this.position.y - compare_point.y);
             return true;
+        }
         return false;
     };
 
@@ -441,7 +440,6 @@ Pad.prototype.setPosition =
 Pad.prototype.update =
     function() {
         var width = canvas.width;
-        var frameRate = 60.0; // deal. with. it.
 
         if (this.tracking) {
             // Keyboard stuff
@@ -608,6 +606,7 @@ function displayHUD() {
     if (MULTIPLIER >= 2)
         ctx.fillText("Chain Bonus x" + MULTIPLIER, (3 * width / 4), height - ballRadius);
 
+
     // Tutorial
     if (SHOWTUTORIAL) {
         // Credits
@@ -662,6 +661,11 @@ function displayHUD() {
         ctx.textAlign = "center";
         ctx.fillText("PAUSE", width / 2, height / 2);
     }
+
+    // FPS
+    setFontSize(9);
+    ctx.textAlign = "left";
+    ctx.fillText("FPS: " + Math.floor(frameRate) + " (" + Math.floor(minFPS) + "/" + Math.floor(maxFPS) + ")", ballRadius, ballRadius);
 }
 
 function updateInput() {
@@ -781,6 +785,15 @@ function update() {
         });
     }
 
+    // 1Up award
+    if(SCORE >= (last1up + livesAwardValue)) {
+        LIVES++;
+        last1up += livesAwardValue;
+    }
+
+    // Clamp lives
+    LIVES = Math.clamp(LIVES, -1, 5);
+
     // Clamp score
     SCORE = Math.clamp(SCORE, 0, 9999999999);
 
@@ -848,6 +861,22 @@ document.addEventListener("resize",
 
 // More system stuff
 function gameLoop() {
+    // Calculate FPS
+    if(!lastCall) {
+        lastCall = Date.now();
+        frameRate = 60.0;
+        minFPS = 60.0;
+        maxFPS = 0.0;
+    }
+    else {
+        var now = Date.now();
+        var deltaTime = (now - lastCall);
+        lastCall = now;
+        frameRate = 1000.0 / deltaTime;
+        minFPS = frameRate < minFPS ? frameRate : minFPS;
+        maxFPS = frameRate > maxFPS ? frameRate : maxFPS;
+    }
+
     update();
     draw();
 }

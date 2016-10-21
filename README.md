@@ -18,12 +18,24 @@ This game uses [GohuFont](font.gohu.org) by Hugo Chargois, ported to TTF by [Gui
 
 To-do List
 ----------
+Stuff that I plan to add/enhance/fix.
 - ~~Resize canvas when resizing screen;~~ (v1.0.1)
 - ~~Add version number;~~ (v1.0.1)
 - ~~Add gamepad support;~~ (v1.0.1)
+- ~~Limit max screen size to 1280x720;~~ (v1.0.1)
+- ~~Center canvas on page;~~ (v1.0.1)
+- ~~Compensate FPS on movement;~~ (v1.0.1)
+- ~~Fix block collision physics;~~ (v1.0.1)
+- ~~Add 1up for every 5000 points;~~ (v1.0.1)
 - Add smartphone support;
-- Add 1up for every 5000 points;
-- Compensate FPS on movement;
-- Idea: Leaderboards;
-- Idea: Multiplayer;
-- Idea: Ghost recording/replaying;
+- Correct bug that gives the player 500 points as highscore, right on the beginning;
+- Add fullscreen support (persistent button);
+- Facebook & Twitter score share button.
+
+Idea List
+---------
+Stuff that I plan to execute... someday.
+
+- Leaderboards;
+- Multiplayer;
+- Ghost recording/replaying;
