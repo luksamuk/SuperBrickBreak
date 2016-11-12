@@ -20,7 +20,7 @@ var lastCall,
 var last1up = 0.0,
     livesAwardValue = 5000;
 
-var version = "v1.0.2b";
+var version = "v1.0.3a";
 
 // Input
 // Async pressing keys and mouse stuff
@@ -31,6 +31,7 @@ var asyncPressingRight = false,
     asyncPressingEnter = false,
     asyncPressingLMB = false,
     asyncPressingQ = false,
+    asyncPressingFullScreen = false,
     mousePos = new vec2(0.0, 0.0),
     leftStickDeadZone = 0.3;
     leftStick = 0.0,
@@ -45,7 +46,8 @@ var pressingRight = false,
     pressingLMB = false,
     pressingQ = false,
     pressingGamepadA = false,
-    pressingGamepadStart = false;
+    pressingGamepadStart = false,
+    pressingFullScreen = false;
 
 // Old sync pressing keys (for pressed state)
 var oldPressingS = false,
@@ -53,7 +55,8 @@ var oldPressingS = false,
     oldPressingLMB = false,
     oldPressingQ = false
     oldPressingGamepadA = false,
-    oldPressingGamepadStart = false;
+    oldPressingGamepadStart = false,
+    oldPressingFullScreen = false;
 
 // Sync pressed keys
 var pressedS = false,
@@ -61,7 +64,8 @@ var pressedS = false,
     pressedLMB = false,
     pressedQ = false,
     pressedGamepadA = false,
-    pressedGamepadStart = false;
+    pressedGamepadStart = false,
+    pressedFullScreen = false;
 
 // Fields
 var LEVEL = 0,
@@ -73,7 +77,8 @@ var LEVEL = 0,
     MULTIPLIER = 0,
     SHOWTUTORIAL = true,
     RESET_GAME = true,
-    PAUSED = false;
+    PAUSED = false,
+    FULLSCREEN = false;
 
 // Tools
 Math.clamp = function(number, min, max) {
@@ -92,6 +97,22 @@ function setFontSize(fontSize) {
 function fitViewport(canvas) {
     canvas.width = window.innerWidth > 1280 ? 1280 : window.innerWidth;
     canvas.height = window.innerHeight > 720 ? 720 : window.innerHeight;
+}
+
+function toggleFullscreen() {
+    console.log("Fullscreen state: " + FULLSCREEN);
+    // Fuck IE
+    if(!FULLSCREEN) {
+        console.log("Entering Full Screen Mode");
+        FULLSCREEN = true;
+        canvas.webkitRequestFullScreen();
+        canvas.mozRequestFullScreen();
+    } else {
+        console.log("Exiting Full Screen Mode");
+        FULLSCREEN = false;
+        canvas.webkitCancelFullScreen();
+        canvas.mozCancelFullcreen();
+    }
 }
 
 
@@ -538,6 +559,48 @@ function checkResetGame() {
     RESET_GAME = false;
 }
 
+function displayFullscreenButton(where) {
+    /*var buttonSize = new vec2(80 * canvas.width / 1280.0,
+                              40 * canvas.height / 720.0);*/
+    var buttonSize = new vec2(80.0, 40.0);
+    
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "white";
+    ctx.lineHeight = 3.0;
+
+    // Button's frame
+    ctx.beginPath();
+    ctx.rect(where.x - (buttonSize.x / 2.0),
+             where.y - (buttonSize.y / 2.0),
+             buttonSize.x, buttonSize.y);
+    ctx.stroke();
+    ctx.closePath();
+
+    // Left bottom corner's "L"
+    ctx.beginPath();
+    ctx.moveTo(where.x - (buttonSize.x / 2.0) + 5.0,
+               where.y + (buttonSize.y / 2.0) - 5.0 - 20.0);
+    ctx.lineTo(where.x - (buttonSize.x / 2.0) + 5.0,
+               where.y + (buttonSize.y / 2.0) - 5.0);
+    ctx.lineTo(where.x - (buttonSize.x / 2.0) + 5.0 + 20.0,
+               where.y + (buttonSize.y / 2.0) - 5.0);
+    ctx.stroke();
+    ctx.closePath();
+
+    // Right top corner's "L"
+    ctx.beginPath();
+    ctx.moveTo(where.x + (buttonSize.x / 2.0) - 5.0 - 20.0,
+               where.y - (buttonSize.y / 2.0) + 5.0);
+    ctx.lineTo(where.x + (buttonSize.x / 2.0) - 5.0,
+               where.y - (buttonSize.y / 2.0) + 5.0);
+    ctx.lineTo(where.x + (buttonSize.x / 2.0) - 5.0,
+               where.y - (buttonSize.y / 2.0) + 5.0 + 20.0);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.lineHeight = 1.0;
+}
+
 function displayHUD() {
     var width = canvas.width;
     var height = canvas.height;
@@ -662,6 +725,14 @@ function displayHUD() {
             ctx.fillText(tutorialLines[i],
                 width / 2, startY + (i * lineHeight));
         }
+
+        // Fullscreen button
+        var fullscreenButtonPosition =
+            new vec2(
+                5* (width / 8.0),
+                height / 2.0 
+            );
+        displayFullscreenButton(fullscreenButtonPosition);
     }
 
     // Paused
@@ -688,6 +759,7 @@ function updateInput() {
     oldPressingEnter = pressingEnter;
     oldPressingLMB = pressingLMB;
     oldPressingQ = pressingQ;
+    oldPressingFullScreen = pressingFullScreen;
 
     // Sync from async input
     pressingLeft = asyncPressingLeft;
@@ -697,12 +769,14 @@ function updateInput() {
     pressingEnter = asyncPressingEnter;
     pressingLMB = asyncPressingLMB;
     pressingQ = asyncPressingQ;
+    pressingFullScreen = asyncPressingFullScreen;
 
     // Get pressed events comparing old and new synced states
     pressedS = !oldPressingS && pressingS;
     pressedEnter = !oldPressingEnter && pressingEnter;
     pressedLMB = !oldPressingLMB && pressingLMB;
     pressedQ = !oldPressingQ && pressingQ;
+    pressedFullScreen = !oldPressingFullScreen && pressingFullScreen;
 
     // Gamepad stuff
     var gamepads = navigator.getGamepads();
@@ -813,6 +887,11 @@ function update() {
 
     // Check if game needs to be reset
     checkResetGame();
+
+
+    // Fullscreen stuff
+    if(pressedFullScreen && SHOWTUTORIAL)
+        toggleFullscreen();
 }
 
 function draw() {
@@ -869,13 +948,34 @@ document.addEventListener("mousemove",
         }
     }, false);
 
+function checkDownInsideArea(clickPos, regionUL, regionBR) {
+    return (clickPos.x >= regionUL.x &&
+            clickPos.x <= regionBR.x &&
+            clickPos.y >= regionUL.y &&
+            clickPos.y <= regionBR.y);
+}
+
 document.addEventListener("mousedown",
     function(e) {
-        if (e.which == 1) asyncPressingLMB = true;
+        if (e.which == 1) {
+            if(!asyncPressingFullScreen &&
+                checkDownInsideArea(mousePos,
+                new vec2(
+                    (5 * (canvas.width / 8.0)) - 40.0,
+                    (canvas.height / 2.0) - 20.0),
+                new vec2(
+                    (5 * (canvas.width / 8.0)) + 40.0,
+                    (canvas.height / 2.0) + 20.0))) {
+                        asyncPressingFullScreen = true;
+                        toggleFullscreen();
+                    }
+            else asyncPressingLMB = true;
+        }
     }, false);
 
 document.addEventListener("mouseup",
     function(e) {
+        asyncPressingFullScreen = false;
         if (e.which == 1) asyncPressingLMB = false;
     }, false);
 

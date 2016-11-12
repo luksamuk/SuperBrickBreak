@@ -18,7 +18,7 @@ This game uses [GohuFont](font.gohu.org) by Hugo Chargois, ported to TTF by [Gui
 
 To-do List
 ----------
-Stuff that I plan to add/enhance/fix.
+Stuff that I already made:
 - ~~Resize canvas when resizing screen;~~ (v1.0.1)
 - ~~Add version number;~~ (v1.0.1)
 - ~~Add gamepad support;~~ (v1.0.1)
@@ -27,11 +27,13 @@ Stuff that I plan to add/enhance/fix.
 - ~~Compensate FPS on movement;~~ (v1.0.1)
 - ~~Fix block collision physics;~~ (v1.0.1)
 - ~~Add 1up for every 5000 points;~~ (v1.0.1)
+- ~~Add a frame border to the game;~~ (v1.0.2b)
+- Add fullscreen support (persistent button) (WIP);
+
+Stuff that I plan to add/enhance/fix:
 - Add smartphone support;
 - Correct bug that gives the player 500 points as highscore, right on the beginning;
-- Add fullscreen support (persistent button);
 - Facebook & Twitter score share button;
-- ~~Add a frame border to the game;~~ (v1.0.2b)
 - Improve graphics
     - Make paddle and ball have a visual style that matches the blocks;
     - Particle effects;
