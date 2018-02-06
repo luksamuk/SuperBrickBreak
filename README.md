@@ -1,7 +1,9 @@
 SUPER BRICKBREAK - Online Edition
 ================
 by Lucas Vieira (luksamuk)<br/>
-Copyright (c) 2016 IronPlay Games.
+Copyright (c) 2016-2018 Lucas Vieira.
+
+**NOTE: For this game's WebAssembly counterpart, check out [this repository](https://github.com/luksamuk/super-brickbreak-rs).**
 
 Fast-paced breakout clone featuring 20+ levels - online version.
 

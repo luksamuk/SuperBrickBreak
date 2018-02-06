@@ -20,7 +20,7 @@ var lastCall,
 var last1up = 0.0,
     livesAwardValue = 5000;
 
-var version = "v1.0.3a";
+var version = "v1.0.3";
 
 // Input
 // Async pressing keys and mouse stuff
@@ -684,7 +684,7 @@ function displayHUD() {
         // Credits
         ctx.textAlign = "end"
         setFontSize(12);
-        ctx.fillText("©2016 IronPlay", width - 4, ballDiameter);
+        ctx.fillText("©2016-2018 Lucas Vieira", width - 4, ballDiameter);
         ctx.fillText(version, width - 4, ballDiameter + (25 / 720 * height));
 
         // High Score
@@ -727,12 +727,12 @@ function displayHUD() {
         }
 
         // Fullscreen button
-        var fullscreenButtonPosition =
+        /*var fullscreenButtonPosition =
             new vec2(
                 5* (width / 8.0),
                 height / 2.0 
             );
-        displayFullscreenButton(fullscreenButtonPosition);
+        displayFullscreenButton(fullscreenButtonPosition);*/
     }
 
     // Paused
@@ -759,7 +759,7 @@ function updateInput() {
     oldPressingEnter = pressingEnter;
     oldPressingLMB = pressingLMB;
     oldPressingQ = pressingQ;
-    oldPressingFullScreen = pressingFullScreen;
+    //oldPressingFullScreen = pressingFullScreen;
 
     // Sync from async input
     pressingLeft = asyncPressingLeft;
@@ -776,7 +776,7 @@ function updateInput() {
     pressedEnter = !oldPressingEnter && pressingEnter;
     pressedLMB = !oldPressingLMB && pressingLMB;
     pressedQ = !oldPressingQ && pressingQ;
-    pressedFullScreen = !oldPressingFullScreen && pressingFullScreen;
+    //pressedFullScreen = !oldPressingFullScreen && pressingFullScreen;
 
     // Gamepad stuff
     var gamepads = navigator.getGamepads();
@@ -890,8 +890,8 @@ function update() {
 
 
     // Fullscreen stuff
-    if(pressedFullScreen && SHOWTUTORIAL)
-        toggleFullscreen();
+    //if(pressedFullScreen && SHOWTUTORIAL)
+    //    toggleFullscreen();
 }
 
 function draw() {
@@ -958,7 +958,7 @@ function checkDownInsideArea(clickPos, regionUL, regionBR) {
 document.addEventListener("mousedown",
     function(e) {
         if (e.which == 1) {
-            if(!asyncPressingFullScreen &&
+            /*if(!asyncPressingFullScreen &&
                 checkDownInsideArea(mousePos,
                 new vec2(
                     (5 * (canvas.width / 8.0)) - 40.0,
@@ -969,13 +969,13 @@ document.addEventListener("mousedown",
                         asyncPressingFullScreen = true;
                         toggleFullscreen();
                     }
-            else asyncPressingLMB = true;
+            else */ asyncPressingLMB = true;
         }
     }, false);
 
 document.addEventListener("mouseup",
     function(e) {
-        asyncPressingFullScreen = false;
+        //asyncPressingFullScreen = false;
         if (e.which == 1) asyncPressingLMB = false;
     }, false);
 
